@@ -49,3 +49,7 @@
 .form-title {
   color: rgb(128, 61, 196);
 }
+
+.hidden {
+  display: none;
+}
