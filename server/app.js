@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const logger = require('morgan');
 const session = require('express-session');
@@ -5,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const path = require('path');
 const FileStore = require('session-file-store')(session);
+const { connectToDB } = require('./db');
 
 const sessionConfig = {
   store: new FileStore(), // Эту папку нужно добавить в файл .gitignore
@@ -20,12 +22,11 @@ const sessionConfig = {
   },
 };
 const loginRouter = require('./routes/authLogin');
-const uploadRouter = require('./routes/filesRouter');
-const feedRouter = require('./routes/feedRouter');
+const filesRouter = require('./routes/filesRouter');
 
 const app = express();
 
-const PORT = 5000;
+const { PORT } = process.env;
 
 app.use(cookieParser());
 app.use(session(sessionConfig));
@@ -35,7 +36,12 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(cors({ origin: true, credentials: true }));
 
 app.use('/api/auth', loginRouter);
-app.use('/uploads', uploadRouter);
-app.use('/feed', feedRouter);
+app.use('/files', filesRouter);
 
-app.listen(PORT, () => console.log(`Соединение с сервером ${PORT}`));
+function connectToServer() {
+  app.listen(PORT, () => console.log(`Connected to server ${PORT}`));
+}
+
+connectToDB()
+  .then(connectToServer)
+  .catch(process.exit);

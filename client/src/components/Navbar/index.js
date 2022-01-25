@@ -1,56 +1,53 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { LogoutOutlined, GlobalOutlined } from '@ant-design/icons';
-import axios from 'axios';
-import { useEffect } from 'react';
 import * as actions from '../../redux/actions/users';
 
 export default function Navbar() {
-  const { user } = useSelector((state) => state.user);
+  const { data } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigator = useNavigate();
 
   const logoutHandler = () => {
-    axios.get('/api/auth/logout', { withCredentials: true })
-      .then(() => {
-        dispatch(actions.logoutUser());
-        navigator('/login', { replace: false });
-      })
-      .catch((err) => console.log(err));
+    dispatch(actions.logoutUserThunk());
+    navigator('/');
   };
 
-  if (user) {
+  if (data?.name) {
     return (
-      <nav className="nav-wrapper">
-        <Link to="/"><GlobalOutlined /></Link>
-        <span>
-          {' '}
-          {' '}
+      <>
+        <nav className="nav-wrapper">
+          <Link to="/feed"><GlobalOutlined /></Link>
+          <span>
+            {' '}
+            {' '}
 
-          Привет,
-          {' '}
-          {user.name}
-          !
-          {' '}
-          {' '}
-        </span>
-        <button className="btn-logout" type="button" onClick={logoutHandler}>
-          Выход
-          {' '}
-          {' '}
-          <LogoutOutlined />
-        </button>
-      </nav>
-
+            Привет,
+            {' '}
+            {data?.name}
+            !
+            {' '}
+            {' '}
+          </span>
+          <button className="btn-logout" type="button" onClick={logoutHandler}>
+            Выход
+            {' '}
+            {' '}
+            <LogoutOutlined />
+          </button>
+        </nav>
+        <Outlet />
+      </>
     );
   }
 
   return (
-    <nav>
-      <Link to="/login">Вход</Link>
+    <nav className="nav-auth">
+      <Link to="/login" key="login">Вход</Link>
       {' '}
       {' '}
-      <Link to="/registrate">Регистрация</Link>
+      <Link to="/registrate" key="registrate">Регистрация</Link>
+      <Outlet />
     </nav>
   );
 }

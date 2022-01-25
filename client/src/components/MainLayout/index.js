@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { CloudUploadOutlined, CloseOutlined } from '@ant-design/icons';
-import './MainTable.css';
-import axios from 'axios';
+import './MainLayout.css';
 import Modal from 'react-modal';
-import TableRow from './TableRow';
-
+import { Outlet } from 'react-router';
 import FormAddFile from '../Form/FormAddFile';
+import Table from './Table';
 import * as actions from '../../redux/actions/files';
 
 const customStyles = {
@@ -21,16 +20,12 @@ const customStyles = {
 };
 
 export default function MainLayout() {
-  let subtitle;
   const [modalIsOpen, setIsOpen] = useState(false);
-  const { files } = useSelector((state) => state);
+
   const dispatch = useDispatch();
 
   function openModal() {
     setIsOpen(true);
-  }
-  function afterOpenModal() {
-    subtitle.style.color = '#f00';
   }
 
   function closeModal() {
@@ -38,9 +33,7 @@ export default function MainLayout() {
   }
 
   useEffect(() => {
-    axios.get('/feed')
-      .then((res) => dispatch(actions.initFiles(res.data)))
-      .catch((error) => console.log(error));
+    dispatch(actions.initFilesThunk());
   }, [dispatch]);
 
   return (
@@ -52,10 +45,8 @@ export default function MainLayout() {
       </button>
       <Modal
         isOpen={modalIsOpen}
-        onAfterOpen={() => afterOpenModal()}
         onRequestClose={() => closeModal()}
         style={customStyles}
-        contentLabel="Example Modal"
       >
         <button type="button" onClick={closeModal} className="btn-close">
           {' '}
@@ -63,15 +54,7 @@ export default function MainLayout() {
         </button>
         <FormAddFile onRequestClose={() => closeModal()} />
       </Modal>
-      <table className="main-table">
-        <tr>
-          <th>Превью</th>
-          <th>Название файла</th>
-          <th>Размер</th>
-          <th>Действия</th>
-        </tr>
-        {files && <TableRow data={files} /> }
-      </table>
+      <Table />
     </>
   );
 }

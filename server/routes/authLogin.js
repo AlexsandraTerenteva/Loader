@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
-const db = require('../db');
+const { User } = require('../db/models');
 
 router
   .route('/')
@@ -17,14 +17,15 @@ router
   .post(async (req, res) => {
     try {
       const { email, password } = req.body;
-      const user = db.users.find((item) => item.email === email);
+      const user = await User.findOne({ where: { email } });
       if (!user) {
         return res.status(400).json({ message: 'Пользователь с такой почтой не существует' });
       }
       if (email === user.email && await bcrypt.compare(password, user.password)) {
         req.session.user = {
-          name: user.userName,
+          name: user.name,
           email,
+          id: user.id,
         };
         return res.json(req.session.user);
       }
@@ -40,15 +41,16 @@ router
     try {
       const { userName, password, email } = req.body;
       if (userName && password && email) {
-        const user = db.users.find((item) => item.email === email);
+        const user = await User.findOne({ where: { email } });
         if (user) {
           return res.status(400).json({ message: 'Пользователь с такой почтой существует' });
         }
         const passwordHash = await bcrypt.hash(password, 10);
-        db.users.push({ userName, password: passwordHash, email });
+        const newUser = await User.create({ name: userName, password: passwordHash, email });
         req.session.user = {
-          name: userName,
-          email,
+          name: newUser.name,
+          email: newUser.email,
+          id: newUser.id,
         };
         return res.json(req.session.user);
       }

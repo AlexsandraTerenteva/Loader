@@ -19,6 +19,19 @@
 .btn-close:hover {
   cursor: pointer;
 }
+.btn-file {
+  padding: 10px;
+  margin-left: 10px;
+  background-color: blueviolet;
+  border-radius: 3px;
+  color: #fff;
+  border: none;
+}
+.btn-file:hover {
+  cursor: pointer;
+  background-color:rgb(158, 76, 240);
+  transition: all .5s ease;
+}
 .nav-wrapper {
   width: 80%;
   margin: 0 auto;
@@ -30,4 +43,7 @@
   box-sizing: border-box;
   background-color: #fff;
   color: blueviolet;
+}
+.nav-auth {
+  margin-top: 2rem;
 }
