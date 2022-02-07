@@ -36,7 +36,14 @@ function App() {
               </PrivateRoute>
             )}
           />
-          <Route path="login" element={<FormLogin />} />
+          <Route
+            path="login"
+            element={(
+              <PrivateRoute isAuth={isAuth}>
+                <FormLogin />
+              </PrivateRoute>
+          )}
+          />
           <Route path="registrate" element={<FormRegister />} />
         </Route>
         <Route path="*" element={<ErrorsMessage />} />

@@ -1,36 +1,25 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable react/jsx-no-bind */
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { CloudUploadOutlined, CloseOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined } from '@ant-design/icons';
 import './MainLayout.css';
-import Modal from 'react-modal';
-import { Outlet } from 'react-router';
+import MainModal from '../Modal';
 import FormAddFile from '../Form/FormAddFile';
 import Table from './Table';
 import * as actions from '../../redux/actions/files';
-
-const customStyles = {
-  content: {
-    top: '30%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
 
 export default function MainLayout() {
   const [modalIsOpen, setIsOpen] = useState(false);
 
   const dispatch = useDispatch();
 
-  function openModal() {
+  const openModal = () => {
     setIsOpen(true);
-  }
+  };
 
-  function closeModal() {
+  const closeModal = () => {
     setIsOpen(false);
-  }
+  };
 
   useEffect(() => {
     dispatch(actions.initFilesThunk());
@@ -43,17 +32,12 @@ export default function MainLayout() {
         {' '}
         <CloudUploadOutlined />
       </button>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => closeModal()}
-        style={customStyles}
+      <MainModal
+        modalIsOpen={modalIsOpen}
+        onRequestClose={closeModal}
       >
-        <button type="button" onClick={closeModal} className="btn-close">
-          {' '}
-          <CloseOutlined />
-        </button>
-        <FormAddFile onRequestClose={() => closeModal()} />
-      </Modal>
+        <FormAddFile onRequestClose={closeModal} />
+      </MainModal>
       <Table />
     </>
   );
